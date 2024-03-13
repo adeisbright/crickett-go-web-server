@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"sync"
 )
@@ -13,9 +14,16 @@ var (
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	mutex.Lock()
 	defer mutex.Unlock()
+	t, err := template.ParseFiles("template/index.html")
+	if err != nil {
+		http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	path := r.URL.Path
-	fmt.Fprintf(w, "%s", path)
+	if err := t.Execute(w, nil); err != nil {
+		http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func main() {
