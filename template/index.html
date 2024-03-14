@@ -4,7 +4,19 @@
     <title>Go WebServer</title>
 </head>
 <body>
-    <h1>Test Web Server</h1>
+    <h1>Test Web Server by {{ .Name }}</h1>
     <p> Webserver Served This Page! </p>
+    {{ if .IsEngineer }}
+    <h2> {{ .Name }} is an Engineer </h2>
+    {{ else }}
+    <h2> {{ .Name }} is not an Engineer </h2> 
+    {{ end }}
+    <p>Take a look at my languages </p>
+    <ol>
+        {{ range .Skills }}
+        <li> {{ . }} </li>
+        {{ end }}
+    </ol>
+
 </body>
 </html>

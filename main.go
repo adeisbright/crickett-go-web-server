@@ -21,33 +21,44 @@ var (
 // 	mutex.Unlock()
 // }
 
-func renderTemplate(templatePath string, w http.ResponseWriter) {
+type templateData = interface{}
+
+func renderTemplate(templatePath string, w http.ResponseWriter, data templateData) {
 	t, err := template.ParseFiles(templatePath)
 	if err != nil {
-		http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+		notFoundTemplate, _ := template.ParseFiles("template/" + "404" + ".html")
+		notFoundTemplate.Execute(w, data)
 		return
 	}
 
-	if err := t.Execute(w, nil); err != nil {
+	if err := t.Execute(w, data); err != nil {
 		http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+type User struct {
+	Name       string
+	IsEngineer bool
+	Skills     []string
 }
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	path := r.URL.Path
-	switch path {
-	case "/":
-		templatePath := "template/" + "index" + ".html"
-		renderTemplate(templatePath, w)
-	case "/about":
-		templatePath := "template/" + path + ".html"
-		renderTemplate(templatePath, w)
-	default:
-		http.NotFound(w, r)
+	templatePath := ""
+	if path == "/" {
+		templatePath = "template/" + "index" + ".html"
+	} else {
+		templatePath = "template" + path + ".html"
 	}
+	user := &User{
+		Name:       "Adeleke Bright",
+		IsEngineer: true,
+		Skills:     []string{"Go", "Typescript", "Python", ".NET"},
+	}
+	renderTemplate(templatePath, w, user)
 
 	// t, err := template.ParseFiles(templatePath)
 	// if err != nil {
