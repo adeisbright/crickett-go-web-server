@@ -6,5 +6,16 @@
 <body>
     <h1>About Page</h1>
     <p> This is About </p>
+    {{ if .IsEngineer }}
+    <h2> {{ .Name }} is an Engineer </h2>
+    {{ else }}
+    <h2> {{ .Name }} is not an Engineer </h2> 
+    {{ end }}
+    <p>Take a look at my languages </p>
+    <ol>
+        {{ range .Skills }}
+        <li> {{ . }} </li>
+        {{ end }}
+    </ol>
 </body>
 </html>
